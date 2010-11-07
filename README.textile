@@ -1,0 +1,40 @@
+h1. HasMoney
+
+Rails plugin which simplifies adding money and currency attributes to
+ActiveRecord models. Uses money gem by RubyMoney.
+
+h1. Installation
+
+Install the plugin:
+
+bq. script/plugin install git://github.com/kammerer/has_money.git
+
+h1. Usage
+
+h2. Currency field:
+
+<pre>
+<code>
+class Foo < ActiveRecord::Base
+  has_currency :currency
+end
+</code>
+</pre>
+
+This code defines Foo#currency attribute.
+
+h2. Money and currency:
+
+<pre>
+<code>
+class Bar < ActiveRecord::Base
+  has_money :price
+end
+</code>
+</pre>
+
+This code defines Bar#price and Bar#price_currency attributes.
+
+More examples to come soon.
+
+
