@@ -44,7 +44,7 @@ bar.price = Money.new(1000, "PLN")
 bar.price # -> Money.new(2.5, "EUR")
 
 bar.price_currency = "PLN"
-bar.price # -> Money.new(2000, "PLN") assumin 1 EUR == 4 PLN
+bar.price # -> Money.new(1000, "PLN") assuming 1 EUR == 4 PLN
 </code></pre>
 
 h2. Multiple money fields with the same currency:
