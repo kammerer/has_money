@@ -20,32 +20,48 @@ module HasMoney
 
     define_method "#{attr}=" do |c|
       c = Money::Currency.new(c.to_s) unless c.is_a? Money::Currency
+
+      if options[:for].present?
+        money_attrs = Array(options[:for]).flatten
+        money_attrs.each do |money_attr|
+          m = send("#{money_attr}")
+          write_attribute(money_attr, m.exchange_to(c).cents) unless m.nil?
+        end
+      end
+
       write_attribute(attr, c.iso_code)
     end
   end
   
   def has_money(attr, options = {})
-    define_method "#{attr}_currency" do
-      c = read_attribute("#{attr}_currency") || options[:default_currency]
-      if c.present?
-        Money::Currency.new(c)
-      else
-        Money.default_currency
+    currency_attribute = options[:with_currency] || "#{attr}_currency"
+    unless options[:with_currency].present?
+      define_method currency_attribute do
+        c = read_attribute("#{attr}_currency") || options[:default_currency]
+        if c.present?
+          Money::Currency.new(c)
+        else
+          Money.default_currency
+        end
       end
-    end
 
-    define_method "#{attr}_currency=" do |c|
-      c = Money::Currency.new(c.to_s) unless c.is_a? Money::Currency
-      write_attribute("#{attr}_currency", c.iso_code)
+      define_method "#{currency_attribute}=" do |c|
+        c = Money::Currency.new(c.to_s) unless c.is_a? Money::Currency
+
+        m = send("#{attr}")
+        write_attribute(attr, m.exchange_to(c).cents) unless m.nil?
+
+        write_attribute("#{attr}_currency", c.iso_code)
+      end
     end
 
     define_method attr do
       cents = read_attribute(attr)
-      Money.new(cents, send("#{attr}_currency").iso_code) unless cents.nil?
+      Money.new(cents, send(currency_attribute).iso_code) unless cents.nil?
     end
 
     define_method "#{attr}=" do |value|
-      currency = send("#{attr}_currency")
+      currency = send(currency_attribute)
 
       unless value.is_a? Money
         value = Money.new(value.to_f * currency.subunit_to_unit, currency.iso_code)
