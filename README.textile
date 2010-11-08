@@ -1,4 +1,4 @@
-h1. HasMoney
+h1. Introduction
 
 Rails plugin which simplifies adding money and currency attributes to
 ActiveRecord models. Uses money gem by RubyMoney.
@@ -7,34 +7,57 @@ h1. Installation
 
 Install the plugin:
 
-bq. script/plugin install git://github.com/kammerer/has_money.git
+<pre>
+  script/plugin install git://github.com/kammerer/has_money.git
+</pre>
 
 h1. Usage
 
 h2. Currency field:
 
-<pre>
-<code>
+<pre><code>
 class Foo < ActiveRecord::Base
   has_currency :currency
 end
-</code>
-</pre>
 
-This code defines Foo#currency attribute.
+foo = Foo.new
+foo.currency = "EUR"
+foo.currency # -> Money::Currency.new("EUR")
 
-h2. Money and currency:
+foo.currency = Money::Currency.new("PLN") 
+foo.currency # -> Money::Currency.new("PLN")
+</code></pre>
 
-<pre>
-<code>
+h2. Money and currency fields:
+
+<pre><code>
 class Bar < ActiveRecord::Base
   has_money :price
 end
-</code>
-</pre>
 
-This code defines Bar#price and Bar#price_currency attributes.
+bar = Bar.new
+bar.price_currency = "EUR"
+bar.price = 5
+bar.price # -> Money.new(500, "EUR")
 
-More examples to come soon.
+bar.price = Money.new(1000, "PLN")
+bar.price # -> Money.new(2.5, "EUR")
 
+bar.price_currency = "PLN"
+bar.price # -> Money.new(2000, "PLN") assumin 1 EUR == 4 PLN
+</code></pre>
+
+h2. Multiple money fields with the same currency:
+
+<pre><code>
+class Baz
+  has_currency :currency, :for => [:min_price, :max_price]
+  has_money :min_price, :with_currency => :currency
+  has_money :max_price, :with_currency => :currency
+end
+</code></pre>
+
+h1. TODOs
+
+ * ActiveRecord style validations
 
