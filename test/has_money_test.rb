@@ -1,8 +1,10 @@
 require "rubygems"
 require "test/unit"
+require "mocha"
 require "active_record"
 require "active_support/test_case"
-require File.expand_path(File.join(File.dirname(__FILE__), '../lib/has_money'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'has_money'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'has_money', 'validators'))
 
 Money.add_rate("PLN", "EUR", 0.25)
 Money.add_rate("EUR", "PLN", 4.0)

@@ -1,4 +1,5 @@
 require "money"
+require File.expand_path(File.join(File.dirname(__FILE__), 'has_money', 'validators'))
 
 # Helper methods for ActiveRecord models which can be used to easily define money and
 # currency attributes using +money+ library.
@@ -7,7 +8,6 @@ require "money"
 # TODO DRY it up
 #+++
 module HasMoney
-
   def has_currency(attr, options = {})
     define_method attr do
       c = read_attribute(attr) || options[:default]
@@ -72,4 +72,19 @@ module HasMoney
     end
   end
 
+  def validates_currency(attr, options = {})
+    validate do |instance|
+      HasMoney::Validators::CurrencyValidator.new(instance, attr, options).validate
+    end
+  end
+
+  def validates_money(attr, options = {})
+    unless options[:currency] == false
+      HasMoney::Validators::CurrencyValidator.new(instance, "#{attr}_currency", options[:currency]).validate
+    end
+
+    validate do |instance|
+      HasMoney::Validators::MoneyValidator.new(instance, attr, options).validate
+    end
+  end
 end
