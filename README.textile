@@ -18,6 +18,7 @@ h2. Currency field:
 <pre><code>
 class Foo < ActiveRecord::Base
   has_currency :currency
+  validates_currency :currency, :in => ["EUR", "PLN"]
 end
 
 foo = Foo.new
@@ -28,11 +29,14 @@ foo.currency = Money::Currency.new("PLN")
 foo.currency # -> Money::Currency.new("PLN")
 </code></pre>
 
+Uses single database column called <code>currency</code> (string).
+
 h2. Money and currency fields:
 
 <pre><code>
 class Bar < ActiveRecord::Base
   has_money :price
+  validates_money :price, :greater_than => 0, :currency => { :in => ["EUR", "PLN"] }
 end
 
 bar = Bar.new
@@ -47,6 +51,22 @@ bar.price_currency = "PLN"
 bar.price # -> Money.new(1000, "PLN") assuming 1 EUR == 4 PLN
 </code></pre>
 
+Uses two database columns:
+
+  * <code>price</code> (integer)
+  * <code>price_currency</code> (string)
+
+Money validation options:
+
+  * <code>:greater_than</code>
+  * <code>:greater_than_or_equal</code>
+  * <code>:less_than</code>
+  * <code>:less_than_or_equal</code>
+  * <code>:between</code>
+
+All options except <code>:between</code> expects amount of money in main units (i.e. euros or dollars, not cents) as a value. <code>:between</code> expects
+a range.
+
 h2. Multiple money fields with the same currency:
 
 <pre><code>
@@ -56,6 +76,12 @@ class Baz
   has_money :max_price, :with_currency => :currency
 end
 </code></pre>
+
+Uses three database columns:
+
+  * <code>min_price</code> (integer)
+  * <code>max_price</code> (integer)
+  * <code>currency</code> (string)
 
 h1. TODOs
 
