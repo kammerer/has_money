@@ -79,11 +79,11 @@ module HasMoney
   end
 
   def validates_money(attr, options = {})
-    unless options[:currency] == false
-      HasMoney::Validators::CurrencyValidator.new(instance, "#{attr}_currency", options[:currency]).validate
-    end
-
     validate do |instance|
+      unless options[:currency] == false
+        HasMoney::Validators::CurrencyValidator.new(instance, "#{attr}_currency", options[:currency]).validate
+      end
+
       HasMoney::Validators::MoneyValidator.new(instance, attr, options).validate
     end
   end
